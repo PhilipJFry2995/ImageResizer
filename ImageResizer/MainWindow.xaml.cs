@@ -20,6 +20,8 @@ namespace ImageResizer
         {
             InitializeComponent();
 
+            about.Content = "Created by Denys Filiahin. Version: 0.1";
+
             toBox.Text = Properties.Settings.Default.Save;
             sizeBox.Text = Properties.Settings.Default.Size;
             quality.Text = Properties.Settings.Default.Quality;
@@ -73,7 +75,7 @@ namespace ImageResizer
             // Set filter for file extension and default file extension
             dlg.Filter = "All files (*.*)|*.*|JPEG Files (*.jpeg)|*.jpeg|PNG Files (*.png)|*.png|JPG Files (*.jpg)|*.jpg";
             // Display OpenFileDialog by calling ShowDialog method
-            Nullable<bool> result = dlg.ShowDialog();
+            bool? result = dlg.ShowDialog();
             
             // Get the selected file name and display in a TextBox 
             if (result == true)
@@ -111,24 +113,24 @@ namespace ImageResizer
             string filePath = toBox.Text + @"\" + imageFileSourceName;
             try
             {
-                System.IO.Path.GetFullPath(filePath);
+                Path.GetFullPath(filePath);
             }
             catch
             {
                 System.Windows.MessageBox.Show("Selected destination path is not correct!", "Path error");
                 return;
             }
-            var imageToSave = System.Drawing.Image.FromFile(imageFileSourcePath);
+            var imageToSave = Image.FromFile(imageFileSourcePath);
 
             //saveImage(filePath, ScaleImage(imageToSave, bigSize, bigSize));
-            Image newImage = null;
+ 
             if (imageToSave.Size.Width < bigSize && imageToSave.Size.Height < bigSize)
             {
                 saveImage(filePath, imageToSave);
             }
             else
             {
-                newImage = ScaleImage(imageToSave, bigSize, bigSize);
+                Image newImage = ScaleImage(imageToSave, bigSize, bigSize);
 
                 saveImage(filePath, newImage);
             }
@@ -151,13 +153,17 @@ namespace ImageResizer
                 {
                     newPath = newPath + '.' + parts[i];
                 }
-                newPath += "(1).jpg";
+                if(pathToSave.Contains(".jpg"))
+                    newPath += "(1).jpg";
+                else newPath += ".jpg";
 
                 image.Save(newPath, jpgEncoder, myEncoderParameters);
             }
             catch (Exception exp)
             {
+                System.Windows.MessageBox.Show(exp.Message);
                 Console.WriteLine(exp.Message);
+                /*
                 string[] parts = pathToSave.Split('.');
                 string newPath = parts[0];
                 for(int i = 0; i < parts.Length - 2; i++)
@@ -166,6 +172,7 @@ namespace ImageResizer
                 }
                 newPath += "(1).jpg";
                 saveImage(newPath, image);
+                */
             }
         }
 
@@ -303,6 +310,8 @@ namespace ImageResizer
 
             g.DrawImage(image, target, source, GraphicsUnit.Pixel);
 
+            image.Dispose();
+
             return trimmedImage;
         }
 
@@ -318,28 +327,15 @@ namespace ImageResizer
                 string[] strs = imageFileSourcePath.Split(new string[] { @"\" }, StringSplitOptions.RemoveEmptyEntries);
                 imageFileSourceName = strs[strs.Length - 1];
 
-                /*
-                Image tempImage;
-                using (var bmpTemp = new Bitmap(imageFileSourcePath))
-                {
-                    tempImage = new Bitmap(bmpTemp);
-                    
-                    File.Delete(Environment.CurrentDirectory + "\\temp.jpg");
-                    tempImage.Save(Environment.CurrentDirectory + "\\temp.jpg");
-                }
-                */
-
                 selectedImage = new BitmapImage();
                 selectedImage.BeginInit();
                 selectedImage.CacheOption = BitmapCacheOption.OnLoad;
                 selectedImage.UriSource = new Uri(imageFileSourcePath);
-                //selectedImage.UriSource = new Uri(Environment.CurrentDirectory + "\\temp.jpg");
                 selectedImage.EndInit();
 
                 image.Source = selectedImage;
 
                 // Resizing and saving
-                //var trimmedImage = TrimImage(Image.FromFile(Environment.CurrentDirectory + "\\temp.jpg"));
                 var trimmedImage = TrimImage(Image.FromFile(imageFileSourcePath));
 
                 int bigSize = 0;
@@ -372,14 +368,6 @@ namespace ImageResizer
             try
             {
                 trimmedImage.Save("temp.jpg", ImageFormat.Jpeg);
-                /*if (imageFileSourcePath.Contains("jpg"))
-                {
-                    trimmedImage.Save("temp.jpg", ImageFormat.Jpeg);
-                }
-                if (imageFileSourcePath.Contains("png"))
-                {
-                    trimmedImage.Save("temp.png", ImageFormat.Png);
-                }*/
             }
             catch(Exception exp)
             {
@@ -388,18 +376,10 @@ namespace ImageResizer
 
             selectedImage = new BitmapImage();
             selectedImage.BeginInit();
+            selectedImage.CacheOption = BitmapCacheOption.OnLoad;
             selectedImage.UriSource = new Uri(Environment.CurrentDirectory + "\\temp.jpg");
             imageFileSourcePath = Environment.CurrentDirectory + "\\temp.jpg";
-            /*if (imageFileSourcePath.Contains("jpg"))
-            {
-                selectedImage.UriSource = new Uri(Environment.CurrentDirectory + "\\temp.jpg");
-                imageFileSourcePath = Environment.CurrentDirectory + "\\temp.jpg";
-            }
-            if (imageFileSourcePath.Contains("png"))
-            {
-                selectedImage.UriSource = new Uri(Environment.CurrentDirectory + "\\temp.png");
-                imageFileSourcePath = Environment.CurrentDirectory + "\\temp.png";
-            }*/
+
             selectedImage.EndInit();
 
             image.Source = selectedImage;
@@ -414,6 +394,7 @@ namespace ImageResizer
             
             selectedImage = new BitmapImage();
             selectedImage.BeginInit();
+            selectedImage.CacheOption = BitmapCacheOption.OnLoad;
             selectedImage.UriSource = new Uri(imageFileSourcePath);
             selectedImage.EndInit();
 
