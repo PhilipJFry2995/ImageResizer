@@ -7,18 +7,18 @@
         mc:Ignorable="d"
         ResizeMode="NoResize"
         AllowDrop="True"
-        Title="ImageResizer" Height="660" Width="630" Drop="image_Drop"
+        Title="ImageResizer" Height="660" Width="670" Drop="image_Drop"
         Closing="Application_ApplicationExit"
         >
     <Grid>
-        <Border Height="450" Width="600" Background="Gray" HorizontalAlignment="Left" Margin="10,31,0,0" VerticalAlignment="Top">
-            <Image x:Name="image" HorizontalAlignment="Left" Height="450" VerticalAlignment="Top" Width="600" AllowDrop="True"/>
+        <Border Height="450" Width="634" Background="Gray" HorizontalAlignment="Left" Margin="10,31,0,0" VerticalAlignment="Top">
+            <Image x:Name="image" HorizontalAlignment="Left" Height="450" VerticalAlignment="Top" Width="633" AllowDrop="True"/>
         </Border>
-        <TextBox x:Name="fromBox" HorizontalAlignment="Left" Height="25" Margin="10,486,0,0" TextWrapping="Wrap" Text="Choose image..." VerticalAlignment="Top" Width="509"/>
-        <TextBox x:Name="toBox" HorizontalAlignment="Left" Height="25" Margin="10,516,0,0" TextWrapping="Wrap" Text="Save image to..." VerticalAlignment="Top" Width="509"/>
-        <Button x:Name="fromButton" Content="Browse" HorizontalAlignment="Left" Height="25" Margin="524,486,0,0" VerticalAlignment="Top" Width="86" Click="fromButton_Click"/>
-        <Button x:Name="toButton" Content="Browse" HorizontalAlignment="Left" Height="25" Margin="524,516,0,0" VerticalAlignment="Top" Width="86" Click="toButton_Click"/>
-        <Button x:Name="saveButton" Content="Resize and save" HorizontalAlignment="Left" Margin="470,581,0,0" VerticalAlignment="Top" Width="140" Height="30" Click="saveButton_Click"/>
+        <TextBox x:Name="fromBox" HorizontalAlignment="Left" Height="25" Margin="10,486,0,0" TextWrapping="Wrap" Text="Choose image..." VerticalAlignment="Top" Width="543"/>
+        <TextBox x:Name="toBox" HorizontalAlignment="Left" Height="25" Margin="10,516,0,0" TextWrapping="Wrap" Text="Save image to..." VerticalAlignment="Top" Width="543"/>
+        <Button x:Name="fromButton" Content="Browse" HorizontalAlignment="Left" Height="25" Margin="558,486,0,0" VerticalAlignment="Top" Width="86" Click="fromButton_Click"/>
+        <Button x:Name="toButton" Content="Browse" HorizontalAlignment="Left" Height="25" Margin="558,516,0,0" VerticalAlignment="Top" Width="86" Click="toButton_Click"/>
+        <Button x:Name="saveButton" Content="Resize and save" HorizontalAlignment="Left" Margin="470,581,0,0" VerticalAlignment="Top" Width="174" Height="30" Click="saveButton_Click"/>
         <TextBox x:Name="sizeBox" HorizontalAlignment="Left" Height="30" Margin="135,581,0,0" TextWrapping="Wrap" Text="735" VerticalAlignment="Top" Width="150" TextAlignment="Right"/>
         <Button x:Name="trimButton" Content="Trim" HorizontalAlignment="Left" Margin="380,581,0,0" VerticalAlignment="Top" Width="85" Height="30
                 " Click="trimButton_Click" />
@@ -27,6 +27,8 @@
         <TextBox x:Name="quality" HorizontalAlignment="Left" Height="30" Margin="254,546,0,0" TextWrapping="Wrap" Text="{Binding ElementName=slider, Path=Value, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Width="31" TextAlignment="Right" />
         <Label x:Name="label" Content="Compression quality" HorizontalAlignment="Left" Margin="10,546,0,0" VerticalAlignment="Top" Height="30" Width="120"/>
         <Label x:Name="label1" Content="Big side" HorizontalAlignment="Left" Margin="10,581,0,0" VerticalAlignment="Top" Width="120" Height="30"/>
-        <Label x:Name="about" Content="About" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Top" Width="600"/>
+        <Label x:Name="about" Content="About" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Top" Width="634"/>
+        <Label x:Name="rawImageSize" Content="Raw image size: " HorizontalAlignment="Left" Margin="290,546,0,0" VerticalAlignment="Top" Height="30" Width="175"/>
+        <Label x:Name="newImageSize" Content="New image size: " HorizontalAlignment="Left" Margin="470,546,0,0" VerticalAlignment="Top" Height="30" Width="174"/>
     </Grid>
 </Window>

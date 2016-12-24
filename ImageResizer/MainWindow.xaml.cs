@@ -20,7 +20,7 @@ namespace ImageResizer
         {
             InitializeComponent();
 
-            about.Content = "Created by Denys Filiahin. Version: 0.1";
+            about.Content = "Created by Denys Filiahin. Version: 0.2";
 
             toBox.Text = Properties.Settings.Default.Save;
             sizeBox.Text = Properties.Settings.Default.Size;
@@ -205,9 +205,9 @@ namespace ImageResizer
             return newImage;
         }
 
-        public Image TrimImage(Image image)
+        public Image TrimImage(Bitmap image)
         {
-            Bitmap newImage = (Bitmap) image;
+            Bitmap newImage = image;
 
             var pixel = newImage.GetPixel(0, 0);
 
@@ -323,6 +323,7 @@ namespace ImageResizer
 
                 imageFileSourcePath = files[0];
                 fromBox.Text = imageFileSourcePath;
+                toBox.Text = imageFileSourcePath;
 
                 string[] strs = imageFileSourcePath.Split(new string[] { @"\" }, StringSplitOptions.RemoveEmptyEntries);
                 imageFileSourceName = strs[strs.Length - 1];
@@ -335,34 +336,58 @@ namespace ImageResizer
 
                 image.Source = selectedImage;
 
-                // Resizing and saving
-                var trimmedImage = TrimImage(Image.FromFile(imageFileSourcePath));
-
                 int bigSize = 0;
                 try
                 {
-                    bigSize = Int32.Parse(sizeBox.Text);
+                    bigSize = int.Parse(sizeBox.Text);
                 }
                 catch
                 {
                     bigSize = 735;
                 }
 
-                if (trimmedImage.Width > bigSize || trimmedImage.Height > bigSize)
-                {
-                    var resizedImage = ScaleImage(trimmedImage, bigSize, bigSize);
-                    saveImage(imageFileSourcePath, resizedImage);
+                Image rawImage = Image.FromFile(imageFileSourcePath);
+                rawImageSize.Content = "Raw image size: " + rawImage.Width + " x " + rawImage.Height;
+                Bitmap bitmap = (Bitmap) rawImage;
+                if (Math.Abs(bitmap.GetPixel(0, 0).R - Color.White.R) < 5 &&
+                        Math.Abs(bitmap.GetPixel(0, 0).G - Color.White.G) < 5 &&
+                        Math.Abs(bitmap.GetPixel(0, 0).B - Color.White.B) < 5)
+                { // Cut all the white space
+                    var trimmedImage = TrimImage(bitmap);
+                   
+                    if (trimmedImage.Width > bigSize || trimmedImage.Height > bigSize)
+                    {
+                        var resizedImage = ScaleImage(trimmedImage, bigSize, bigSize);
+                        saveImage(imageFileSourcePath, resizedImage);
+                        newImageSize.Content = "New image size: " + resizedImage.Width + " x " + resizedImage.Height;
+                    }
+                    else
+                    {
+                        saveImage(imageFileSourcePath, trimmedImage);
+                        newImageSize.Content = "New image size: " + trimmedImage.Width + " x " + trimmedImage.Height;
+                    }
                 }
                 else
-                {
-                    saveImage(imageFileSourcePath, trimmedImage);
+                { // If not white, just resize if necessary
+                    if (bitmap.Width > bigSize || bitmap.Height > bigSize)
+                    {
+                        var resizedImage = ScaleImage(bitmap, bigSize, bigSize);
+                        saveImage(imageFileSourcePath, resizedImage);
+                        newImageSize.Content = "New image size: " + resizedImage.Width + " x " + resizedImage.Height;
+                    }
+                    else
+                    {
+                        saveImage(imageFileSourcePath, bitmap);
+                        newImageSize.Content = "New image size: " + bitmap.Width + " x " + bitmap.Height;
+                    }
                 }
+                
             }
         }
 
         private void trimButton_Click(object sender, RoutedEventArgs e)
         {
-            var imageToTrim = Image.FromFile(imageFileSourcePath);
+            var imageToTrim = (Bitmap)Image.FromFile(imageFileSourcePath);
             var trimmedImage = TrimImage(imageToTrim);
 
             try
