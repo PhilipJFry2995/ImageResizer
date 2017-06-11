@@ -20,7 +20,7 @@ namespace ImageResizer
         {
             InitializeComponent();
 
-            about.Content = "Created by Denys Filiahin. Version: 0.2";
+            about.Content = "Created by Denys Filiahin. Version: 0.3";
 
             toBox.Text = Properties.Settings.Default.Save;
             sizeBox.Text = Properties.Settings.Default.Size;
@@ -317,15 +317,17 @@ namespace ImageResizer
 
         private void image_Drop(object sender, System.Windows.DragEventArgs e)
         {
-            if (e.Data.GetDataPresent(System.Windows.DataFormats.FileDrop))
+            if (!e.Data.GetDataPresent(System.Windows.DataFormats.FileDrop)) return;
+            var files = (string[]) e.Data.GetData(System.Windows.DataFormats.FileDrop);
+            if (files == null) return;
+            foreach (var file in files)
             {
-                string[] files = (string[])e.Data.GetData(System.Windows.DataFormats.FileDrop);
-
-                imageFileSourcePath = files[0];
+                imageFileSourcePath = file;
                 fromBox.Text = imageFileSourcePath;
                 toBox.Text = imageFileSourcePath;
 
-                string[] strs = imageFileSourcePath.Split(new string[] { @"\" }, StringSplitOptions.RemoveEmptyEntries);
+                string[] strs = imageFileSourcePath.Split(new string[] {@"\"},
+                    StringSplitOptions.RemoveEmptyEntries);
                 imageFileSourceName = strs[strs.Length - 1];
 
                 selectedImage = new BitmapImage();
@@ -350,30 +352,35 @@ namespace ImageResizer
                 rawImageSize.Content = "Raw image size: " + rawImage.Width + " x " + rawImage.Height;
                 Bitmap bitmap = (Bitmap) rawImage;
                 if (Math.Abs(bitmap.GetPixel(0, 0).R - Color.White.R) < 5 &&
-                        Math.Abs(bitmap.GetPixel(0, 0).G - Color.White.G) < 5 &&
-                        Math.Abs(bitmap.GetPixel(0, 0).B - Color.White.B) < 5)
-                { // Cut all the white space
+                    Math.Abs(bitmap.GetPixel(0, 0).G - Color.White.G) < 5 &&
+                    Math.Abs(bitmap.GetPixel(0, 0).B - Color.White.B) < 5)
+                {
+                    // Cut all the white space
                     var trimmedImage = TrimImage(bitmap);
-                   
+
                     if (trimmedImage.Width > bigSize || trimmedImage.Height > bigSize)
                     {
                         var resizedImage = ScaleImage(trimmedImage, bigSize, bigSize);
                         saveImage(imageFileSourcePath, resizedImage);
-                        newImageSize.Content = "New image size: " + resizedImage.Width + " x " + resizedImage.Height;
+                        newImageSize.Content = "New image size: " + resizedImage.Width + " x " +
+                                               resizedImage.Height;
                     }
                     else
                     {
                         saveImage(imageFileSourcePath, trimmedImage);
-                        newImageSize.Content = "New image size: " + trimmedImage.Width + " x " + trimmedImage.Height;
+                        newImageSize.Content = "New image size: " + trimmedImage.Width + " x " +
+                                               trimmedImage.Height;
                     }
                 }
                 else
-                { // If not white, just resize if necessary
+                {
+                    // If not white, just resize if necessary
                     if (bitmap.Width > bigSize || bitmap.Height > bigSize)
                     {
                         var resizedImage = ScaleImage(bitmap, bigSize, bigSize);
                         saveImage(imageFileSourcePath, resizedImage);
-                        newImageSize.Content = "New image size: " + resizedImage.Width + " x " + resizedImage.Height;
+                        newImageSize.Content = "New image size: " + resizedImage.Width + " x " +
+                                               resizedImage.Height;
                     }
                     else
                     {
@@ -381,7 +388,6 @@ namespace ImageResizer
                         newImageSize.Content = "New image size: " + bitmap.Width + " x " + bitmap.Height;
                     }
                 }
-                
             }
         }
 
